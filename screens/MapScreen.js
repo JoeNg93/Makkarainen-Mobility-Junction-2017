@@ -316,7 +316,7 @@ const MAP_STYLE = [
 
 class MapScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    headerTitle: 'Makkarainen',
+    headerTitle: 'Station',
     headerStyle: { backgroundColor: '#0D1842' },
     headerTitleStyle: { color: 'white' },
     headerRight: (
@@ -371,10 +371,77 @@ class MapScreen extends Component {
           provider={MapView.PROVIDER_GOOGLE}
           customMapStyle={MAP_STYLE}
         />
+        <View style={{
+          position:'absolute',
+          bottom: 160,
+          right: 5,}}>
+          <Button
+            icon={{
+              name: 'location-arrow',
+              type: 'font-awesome',
+              style: {left: 5},
+              color: '#3B3B3B',
+              }}
+            buttonStyle={{
+              borderRadius: 30,
+              width: 60,
+              height: 60,
+              backgroundColor: '#FFFFFF'}}
+          />
+        </View>
         <View style={styles.bottomNavContainer}>
-          <Button icon={{name: 'map', type: 'font-awesome'}}/>
-          <Button icon={{name: 'share', type: 'font-awesome', large: true}}/>
-          <Button icon={{name: 'location-arrow', type: 'font-awesome'}}/>
+          <View style={{justifyContent: 'center'}}>
+            <Button
+              icon={{
+                name: 'map',
+                type: 'font-awesome',
+                style: {left: 5},
+                }}
+              buttonStyle={styles.navButtonStyle}
+            />
+            <Text
+              style={{color: '#ffffff',
+              textAlign: 'center',
+              marginTop: 8,
+              marginBottom: 8, }}>Station
+            </Text>
+          </View>
+
+          <View style={{justifyContent: 'center'}}>
+            <Button
+              icon={{
+                name: 'share',
+                type: 'font-awesome',
+                style: {left: 5},
+                }}
+              buttonStyle={styles.navBigButtonStyle}
+              large
+            />
+            <Text
+              style={{color: '#ffffff',
+              textAlign: 'center',
+              marginTop: 9,
+              marginBottom: 8, }}>Go to
+            </Text>
+          </View>
+
+
+          <View style={{justifyContent: 'center'}}>
+            <Button
+              icon={{
+                name: 'edit',
+                type: 'font-awesome',
+                style: {left: 5},
+                }}
+              buttonStyle={styles.navButtonStyle}
+            />
+            <Text
+              style={{color: '#ffffff',
+              textAlign: 'center',
+              marginTop: 8,
+              marginBottom: 8, }}>Manage
+            </Text>
+          </View>
         </View>
       </View>
     );
@@ -396,40 +463,25 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     justifyContent: 'center',
     backgroundColor: 'transparent'
   },
-  mapPlace: {
-    height: 63,
-    width: 63,
-    borderRadius: 31,
+  navButtonStyle: {
+    borderRadius: 32,
+    width: 64,
+    height: 64,
     backgroundColor: '#F29C35',
-    alignItems: 'center',
-    justifyContent: 'center'
   },
-  searchButton: {
-    height: 80,
-    width: 80,
+
+  navBigButtonStyle: {
     borderRadius: 40,
+    width: 80,
+    height: 80,
     backgroundColor: '#F29C35',
-    borderWidth: 2,
-    borderStyle: 'solid',
-    borderColor: '#ffffff',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  navButton: {
-    height: 63,
-    width: 63,
-    borderRadius: 31,
-    backgroundColor: '#F29C35',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  icons: {
-    color: '#ffffff'
   }
+
+
 });
 
 export default MapScreen;
