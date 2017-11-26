@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, Image, Dimensions } from 'react-native';
 import { Icon, Button } from 'react-native-elements';
 import { MapView } from 'expo';
+import _ from 'lodash';
+import axios from 'axios';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -13,6 +15,121 @@ class LiveMapScreen extends React.Component {
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421
   };
+
+  state = {
+    buses: {}
+  };
+
+  randomColors = ['#0D1842', '#F29C35', '#FF7D71'];
+
+  renderBuses = () => {
+    return Object.keys(this.state.buses).map(busRef => {
+      return (
+        <MapView.Marker coordinate={this.state.buses[busRef]} key={busRef}>
+          <View
+            style={{
+              borderRadius: 50,
+              width: 35,
+              height: 35,
+              paddingTop: 5,
+              backgroundColor: this.randomColors[
+                Math.floor(Math.random() * this.randomColors.length)
+              ]
+            }}
+          >
+            <Icon type="font-awesome" name="bus" color="white" size={20} />
+          </View>
+        </MapView.Marker>
+      );
+    });
+  };
+
+  getData() {
+    setInterval(() => {
+      //     // Make a request for a user with a given ID
+      // let myDate = new Date(2017, 10, 26, 10, 15, 0);
+      let myDate = new Date();
+      let day = 'sunday';
+      let stopPointID = '0514';
+      let endStopPointId = '0522';
+      let startIndex = 0;
+      axios
+        .get(
+          'http://data.itsfactory.fi/journeys/api/1/journeys?stopPointId=' +
+            stopPointID +
+            '&dayTypes=' +
+            day +
+            '&startIndex=' +
+            startIndex
+        )
+        .then(response => {
+          //console.log(_.uniqBy(response.data.body, x => x.activityUrl));
+          _.uniqBy(response.data.body, x => x.activityUrl)
+            .filter(journey => {
+              const stopPointNames = journey.calls.map(
+                x => x.stopPoint.shortName
+              );
+              return (
+                stopPointNames.indexOf(stopPointID) !== -1 &&
+                stopPointNames.indexOf(endStopPointId) !== -1
+              );
+            })
+            .forEach(element => {
+              //  console.log(element.calls);
+              let arrivalTime = element.calls.find(call => {
+                return call.stopPoint.shortName === stopPointID;
+              }).arrivalTime;
+
+              let elementTime = new Date(
+                2017,
+                10,
+                26,
+                arrivalTime.substr(0, 2),
+                arrivalTime.substr(3, 2),
+                arrivalTime.substr(6, 2)
+              );
+              //console.log(elementTime + " -- " + myDate);
+              if (elementTime > myDate) {
+                //  console.log(element.activityUrl);
+                axios.get(element.activityUrl).then(res => {
+                  res.data.body.forEach(ele => {
+                    console.log(ele);
+                    if (ele != null) {
+                      const {
+                        vehicleRef,
+                        vehicleLocation
+                      } = ele.monitoredVehicleJourney;
+                      const { longitude, latitude } = vehicleLocation;
+                      console.log(vehicleRef);
+                      console.log(longitude);
+                      console.log(latitude);
+                      console.log(elementTime.toTimeString());
+                      this.setState({
+                        buses: {
+                          ...this.state.buses,
+                          [vehicleRef]: {
+                            longitude: Number(longitude),
+                            latitude: Number(latitude)
+                          }
+                        }
+                      });
+                    }
+                  });
+                });
+              }
+            });
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+
+      console.log('--------');
+    }, 1000);
+  }
+
+  componentDidMount() {
+    this.getData();
+  }
 
   static navigationOptions = ({ navigation }) => ({
     headerTitle: 'Live Map',
@@ -35,11 +152,16 @@ class LiveMapScreen extends React.Component {
   render() {
     return (
       <View style={{ flex: 1 }}>
-        <MapView
-          initialRegion={this.initialRegion}
-          style={styles.mapContainer}
-        />
-        <View style={{ flex: 1, position: 'absolute', backgroundColor: 'transparent' }}>
+        <MapView initialRegion={this.initialRegion} style={styles.mapContainer}>
+          {this.renderBuses()}
+        </MapView>
+        <View
+          style={{
+            flex: 1,
+            position: 'absolute',
+            backgroundColor: 'transparent'
+          }}
+        >
           <Button
             icon={{
               name: 'bell-slash',
