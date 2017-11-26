@@ -326,7 +326,11 @@ class MapScreen extends Component {
         iconStyle={styles.navBarRightIconStyle}
       />
     ),
-    tabBarVisible: false
+    tabBarVisible: false,
+    tabBarIcon: ({ tintColor }) => (
+      <Icon type="font-awesome" name="map" color={tintColor} />
+    ),
+    tabBarLabel: 'Station'
   });
 
   initialRegion = {
@@ -340,10 +344,8 @@ class MapScreen extends Component {
     return (
       <View style={{ flex: 1 }}>
         <StatusBar barStyle="light-content" />
-        <MapView
-          initialRegion={this.initialRegion}
-          style={styles.mapContainer}
-        />
+        <MapView initialRegion={this.initialRegion} style={styles.mapContainer}>
+        </MapView>
         <View
           style={{
             position: 'absolute',

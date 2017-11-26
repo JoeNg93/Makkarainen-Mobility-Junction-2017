@@ -7,6 +7,8 @@ import MapScreen from './screens/MapScreen';
 import SearchScreen from './screens/SearchScreen';
 import SearchResultScreen from './screens/SearchResultScreen';
 import LiveMapScreen from './screens/LiveMapScreen';
+import BottomNavBar from './components/BottomNavBar';
+import ManageScreen from './screens/ManageScreen';
 
 const MainNavigator = TabNavigator(
   {
@@ -17,9 +19,23 @@ const MainNavigator = TabNavigator(
         searchResult: { screen: SearchResultScreen },
         liveMap: { screen: LiveMapScreen }
       })
+    },
+    manageContainer: {
+      screen: ManageScreen
     }
   },
-  { animationEnabled: true, lazy: true }
+  {
+    animationEnabled: true,
+    lazy: true,
+    tabBarOptions: {
+      style: {
+        backgroundColor: '#0D1842',
+      },
+      activeTintColor: '#F29C35',
+      inactiveTintColor: 'white',
+      labelStyle: { fontSize: 12 },
+    }
+  }
 );
 
 export default class App extends React.Component {

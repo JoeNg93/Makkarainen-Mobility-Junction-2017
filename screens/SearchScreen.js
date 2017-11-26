@@ -7,7 +7,7 @@ const SCREEN_HEIGHT = Dimensions.get('window').height / 3.1;
 
 class SearchScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    headerTitle: 'Go to',
+    headerTitle: 'Go To',
     headerStyle: { backgroundColor: '#0D1842' },
     headerTitleStyle: { color: 'white' },
     headerRight: (
@@ -16,7 +16,11 @@ class SearchScreen extends Component {
         name="bars"
         iconStyle={styles.navBarRightIconStyle}
       />
-    )
+    ),
+    tabBarIcon: ({ tintColor }) => (
+      <Icon type="font-awesome" name="mail-forward" color={tintColor} />
+    ),
+    tabBarLabel: 'Go To'
   });
 
   render() {
@@ -134,7 +138,7 @@ class SearchScreen extends Component {
             <View style={styles.from}>
               <Text style={[styles.grey, { bottom: 5 }]}>From</Text>
               <Text style={{ textAlign: 'center' }}>
-                Kajaanintie 40,{'\n'}Oulu
+                Koskipuisto G,{'\n'}, Tempere
               </Text>
             </View>
             <Icon
@@ -145,7 +149,7 @@ class SearchScreen extends Component {
             <View style={styles.to}>
               <Text style={[styles.grey, { bottom: 5 }]}>To</Text>
               <Text style={{ textAlign: 'center' }}>
-                Hanhitie 17,{'\n'}Oulu
+                Haurala,{'\n'}Tempere
               </Text>
             </View>
           </View>
@@ -158,7 +162,7 @@ class SearchScreen extends Component {
                 type="font-awesome"
                 name="angle-down"
               />
-              <Text style={{ marginLeft: 10 }}> 09:00 </Text>
+              <Text style={{ marginLeft: 10 }}> 12:00 </Text>
               <Icon
                 iconStyle={styles.smallArrow}
                 type="font-awesome"

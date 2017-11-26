@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, Image, Dimensions, ActivityIndicator } from 'react-native';
 import { Icon, Button } from 'react-native-elements';
 import { MapView } from 'expo';
+import axios from 'axios';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -326,7 +327,11 @@ class SearchResultScreen extends React.Component {
         iconStyle={styles.navBarRightIconStyle}
       />
     ),
-    headerTintColor: 'white'
+    headerTintColor: 'white',
+    tabBarIcon: ({ tintColor }) => (
+      <Icon type="font-awesome" name="mail-forward" color={tintColor} />
+    ),
+    tabBarLabel: 'Go To'
   });
 
   initialRegion = {
@@ -336,233 +341,277 @@ class SearchResultScreen extends React.Component {
     longitudeDelta: 0.0421
   };
 
+  state = {
+    coordinates: []
+  };
+
+  componentWillMount = async () => {
+    const response = await axios.get(
+      'http://data.itsfactory.fi/journeys/api/1/journeys/542280?dayTypes=sunday'
+    );
+    const { body } = response.data;
+    const coordinates = body[0].calls.reduce((acc, currentCall) => {
+      const latitude = Number(currentCall.stopPoint.location.split(',')[0]);
+      const longitude = Number(currentCall.stopPoint.location.split(',')[1]);
+      return acc.concat({ latitude, longitude });
+    }, []);
+    this.setState({ coordinates });
+  };
+
   render() {
-    return (
-      <View style={{ flex: 1 }}>
-        <MapView
-          initialRegion={this.initialRegion}
-          style={{ flex: 1, justifyContent: 'flex-end' }}
-        />
-        <View
-          style={{
-            flex: 1,
-            position: 'absolute',
-            backgroundColor: 'transparent'
-          }}
-        >
-          <Button
-            icon={{
-              name: 'bell-slash',
-              type: 'font-awesome',
-              color: 'white',
-              style: { left: 4 },
-              size: 15
-            }}
-            buttonStyle={{
-              height: 50,
-              width: 50,
-              borderRadius: 50 / 2,
-              backgroundColor: '#000000',
-              marginTop: 20,
-              marginLeft: 10
-            }}
-          />
-          <Button
-            icon={{
-              name: 'calendar',
-              type: 'font-awesome',
-              color: 'white',
-              style: { left: 5 },
-              size: 15
-            }}
-            buttonStyle={{
-              height: 50,
-              width: 50,
-              borderRadius: 50 / 2,
-              backgroundColor: '#000000',
-              marginTop: 20,
-              marginLeft: 10
-            }}
-          />
-          <Text
-            style={{
-              position: 'absolute',
-              top: 25,
-              left: 87,
-              color: '#000000',
-              fontSize: 14
-            }}
+    if (this.state.coordinates.length) {
+      return (
+        <View style={{ flex: 1 }}>
+          <MapView
+            initialRegion={this.initialRegion}
+            style={{ flex: 1, justifyContent: 'flex-end' }}
           >
-            Set notification
-          </Text>
-          <Text
-            style={{
-              position: 'absolute',
-              top: 105,
-              left: 87,
-              color: '#000000',
-              fontSize: 14
-            }}
-          >
-            Set schedule
-          </Text>
-        </View>
-        <View
-          style={{
-            flex: 3,
-            position: 'absolute',
-            bottom: 30,
-            left: (SCREEN_WIDTH - 337) / 2,
-            backgroundColor: '#FFFFFF',
-            height: 185,
-            width: 337,
-            borderRadius: 20
-          }}
-        >
+            <MapView.Polyline
+              coordinates={this.state.coordinates}
+              strokeWidth={3}
+              strokeColor="#F29C35"
+            />
+            <MapView.Circle
+              center={this.state.coordinates[0]}
+              radius={50}
+              strokeColor="white"
+              fillColor="#F29C35"
+            />
+            <MapView.Circle
+              center={this.state.coordinates[this.state.coordinates.length - 1]}
+              radius={50}
+              strokeColor="white"
+              fillColor="#F29C35"
+            />
+            <MapView.Marker coordinate={{ latitude: 61.498361, longitude: 23.769732 }}/>
+          </MapView>
           <View
             style={{
-              flex: 3,
-              justifyContent: 'center',
-              alignItems: 'center',
-              flexDirection: 'row'
+              flex: 1,
+              position: 'absolute',
+              backgroundColor: 'transparent'
             }}
           >
-            <View
-              style={{
-                flex: 7
-              }}
-            >
-              <Icon
-                iconStyle={{
-                  fontSize: 40,
-                  marginTop: 10,
-                  marginLeft: 20
-                }}
-                type="font-awesome"
-                name="bus"
-              />
-            </View>
-            <View
-              style={{
-                flex: 16,
-                flexDirection: 'column'
-              }}
-            >
-              <Text
-                style={{
-                  flex: 3,
-                  fontWeight: 'bold',
-                  fontSize: 22,
-                  marginTop: 20
-                }}
-              >
-                253
-              </Text>
-              <Text
-                style={{
-                  flex: 2,
-                  color: 'grey',
-                  fontSize: 10
-                }}
-              >
-                250m walking, leave in 10 minutes
-              </Text>
-            </View>
             <Button
               icon={{
-                name: 'star',
+                name: 'bell-slash',
                 type: 'font-awesome',
-                style: { left: 5 }
+                color: 'white',
+                style: { left: 4 },
+                size: 15
               }}
               buttonStyle={{
                 height: 50,
                 width: 50,
                 borderRadius: 50 / 2,
                 backgroundColor: '#000000',
-                marginBottom: 60,
-                marginRight: 10
-              }}
-            />
-          </View>
-          <View
-            style={{
-              flex: 1,
-              flexDirection: 'row',
-              justifyContent: 'center'
-            }}
-          >
-            <Icon
-              type="font-awesome"
-              name="circle"
-              iconStyle={{
-                color: '#0d1842',
-                fontSize: 6
-              }}
-            />
-            <Icon
-              type="font-awesome"
-              name="circle"
-              iconStyle={{
-                color: '#c4c4c4',
-                fontSize: 6,
+                marginTop: 20,
                 marginLeft: 10
               }}
             />
-          </View>
-          <View
-            style={{
-              flex: 2,
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-          >
-            <Text style={{ textAlign: 'center' }}>
-              Kajaanintie 40,{'\n'}Oulu
-            </Text>
-            <Icon
-              type="font-awesome"
-              name="exchange"
-              iconStyle={{
-                color: '#F29C35',
-                fontSize: 14,
-                marginLeft: 30,
-                marginRight: 30
+            <Button
+              icon={{
+                name: 'calendar',
+                type: 'font-awesome',
+                color: 'white',
+                style: { left: 5 },
+                size: 15
+              }}
+              buttonStyle={{
+                height: 50,
+                width: 50,
+                borderRadius: 50 / 2,
+                backgroundColor: '#000000',
+                marginTop: 20,
+                marginLeft: 10
               }}
             />
-            <Text style={{ textAlign: 'center' }}>Hanhitie 17,{'\n'}Oulu</Text>
+            <Text
+              style={{
+                position: 'absolute',
+                top: 25,
+                left: 87,
+                color: '#000000',
+                fontSize: 14
+              }}
+            >
+              Set notification
+            </Text>
+            <Text
+              style={{
+                position: 'absolute',
+                top: 105,
+                left: 87,
+                color: '#000000',
+                fontSize: 14
+              }}
+            >
+              Set schedule
+            </Text>
           </View>
           <View
             style={{
-              justifyContent: 'center',
-              alignItems: 'center'
+              flex: 3,
+              position: 'absolute',
+              bottom: 30,
+              left: (SCREEN_WIDTH - 337) / 2,
+              backgroundColor: '#FFFFFF',
+              height: 185,
+              width: 337,
+              borderRadius: 20
             }}
           >
-            <Button
-              title="Show live map"
-              buttonStyle={{
-                width: 144,
-                height: 34,
-                borderRadius: 10,
-                backgroundColor: '#F29C35',
+            <View
+              style={{
+                flex: 3,
+                justifyContent: 'center',
+                alignItems: 'center',
+                flexDirection: 'row'
+              }}
+            >
+              <View
+                style={{
+                  flex: 7
+                }}
+              >
+                <Icon
+                  iconStyle={{
+                    fontSize: 40,
+                    marginTop: 10,
+                    marginLeft: 20
+                  }}
+                  type="font-awesome"
+                  name="bus"
+                />
+              </View>
+              <View
+                style={{
+                  flex: 16,
+                  flexDirection: 'column'
+                }}
+              >
+                <Text
+                  style={{
+                    flex: 3,
+                    fontWeight: 'bold',
+                    fontSize: 22,
+                    marginTop: 20
+                  }}
+                >
+                  253
+                </Text>
+                <Text
+                  style={{
+                    flex: 2,
+                    color: 'grey',
+                    fontSize: 10
+                  }}
+                >
+                  250m walking, leave in 10 minutes
+                </Text>
+              </View>
+              <Button
+                icon={{
+                  name: 'star',
+                  type: 'font-awesome',
+                  style: { left: 5 }
+                }}
+                buttonStyle={{
+                  height: 50,
+                  width: 50,
+                  borderRadius: 50 / 2,
+                  backgroundColor: '#000000',
+                  marginBottom: 60,
+                  marginRight: 10
+                }}
+              />
+            </View>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+                justifyContent: 'center'
+              }}
+            >
+              <Icon
+                type="font-awesome"
+                name="circle"
+                iconStyle={{
+                  color: '#0d1842',
+                  fontSize: 6
+                }}
+              />
+              <Icon
+                type="font-awesome"
+                name="circle"
+                iconStyle={{
+                  color: '#c4c4c4',
+                  fontSize: 6,
+                  marginLeft: 10
+                }}
+              />
+            </View>
+            <View
+              style={{
+                flex: 2,
+                flexDirection: 'row',
                 justifyContent: 'center',
                 alignItems: 'center'
               }}
-              onPress={() => this.props.navigation.navigate('liveMap') }
+            >
+              <Text style={{ textAlign: 'center' }}>
+                Koskipuisto G ,{'\n'}Tempere
+              </Text>
+              <Icon
+                type="font-awesome"
+                name="exchange"
+                iconStyle={{
+                  color: '#F29C35',
+                  fontSize: 14,
+                  marginLeft: 30,
+                  marginRight: 30
+                }}
+              />
+              <Text style={{ textAlign: 'center' }}>Haurala,{'\n'}Tempere</Text>
+            </View>
+            <View
+              style={{
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
+              <Button
+                title="Show live map"
+                buttonStyle={{
+                  width: 144,
+                  height: 34,
+                  borderRadius: 10,
+                  backgroundColor: '#F29C35',
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}
+                onPress={() => this.props.navigation.navigate('liveMap') }
+              />
+            </View>
+            <Icon
+              type="font-awesome"
+              name="angle-down"
+              iconStyle={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                color: '#B2B2B2'
+              }}
             />
           </View>
-          <Icon
-            type="font-awesome"
-            name="angle-down"
-            iconStyle={{
-              justifyContent: 'center',
-              alignItems: 'center',
-              color: '#B2B2B2'
-            }}
-          />
         </View>
-      </View>
-    );
+      );
+    } else {
+      return (
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <ActivityIndicator size="small"/>
+        </View>
+      )
+    }
   }
 }
 

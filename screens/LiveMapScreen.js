@@ -25,7 +25,11 @@ class LiveMapScreen extends React.Component {
         iconStyle={styles.navBarRightIconStyle}
       />
     ),
-    headerTintColor: 'white'
+    headerTintColor: 'white',
+    tabBarIcon: ({ tintColor }) => (
+      <Icon type="font-awesome" name="mail-forward" color={tintColor} />
+    ),
+    tabBarLabel: 'Go To'
   });
 
   render() {
