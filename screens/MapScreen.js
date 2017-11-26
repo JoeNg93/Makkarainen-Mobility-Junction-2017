@@ -316,7 +316,7 @@ const MAP_STYLE = [
 
 class MapScreen extends Component {
   static navigationOptions = ({ navigation }) => ({
-    headerTitle: 'Makkarainen',
+    headerTitle: 'Station',
     headerStyle: { backgroundColor: '#0D1842' },
     headerTitleStyle: { color: 'white' },
     headerRight: (
@@ -325,41 +325,16 @@ class MapScreen extends Component {
         name="bars"
         iconStyle={styles.navBarRightIconStyle}
       />
-    )
+    ),
+    tabBarVisible: false
   });
 
-  state = {
-    mapIsLoaded: false
-  };
-
   initialRegion = {
-    latitude: 37.78825,
-    longitude: -122.4324,
+    latitude: 61.498812,
+    longitude: 23.7545664,
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421
   };
-
-  test() {
-    if (this.state.mapIsLoaded) {
-      return (
-        <View style={styles.bottomNavContainer}>
-          <View style={styles.mapPlace}>
-            <Icon type="font-awesome" name="map" iconStyle={styles.icons} />
-          </View>
-          <View style={styles.searchButton}>
-            <Icon type="font-awesome" name="share" iconStyle={styles.icons} />
-          </View>
-          <View style={styles.navButton}>
-            <Icon
-              type="font-awesome"
-              name="location-arrow"
-              iconStyle={styles.icons}
-            />
-          </View>
-        </View>
-      );
-    }
-  }
 
   render() {
     return (
@@ -368,13 +343,100 @@ class MapScreen extends Component {
         <MapView
           initialRegion={this.initialRegion}
           style={styles.mapContainer}
-          provider={MapView.PROVIDER_GOOGLE}
-          customMapStyle={MAP_STYLE}
         />
+        <View
+          style={{
+            position: 'absolute',
+            bottom: 160,
+            right: 5
+          }}
+        >
+          <Button
+            icon={{
+              name: 'location-arrow',
+              type: 'font-awesome',
+              style: { left: 5 },
+              color: '#3B3B3B'
+            }}
+            buttonStyle={{
+              borderRadius: 30,
+              width: 60,
+              height: 60,
+              backgroundColor: '#FFFFFF'
+            }}
+            onPress={() => console.log('Location-arrow')}
+          />
+        </View>
         <View style={styles.bottomNavContainer}>
-          <Button icon={{name: 'map', type: 'font-awesome'}}/>
-          <Button icon={{name: 'share', type: 'font-awesome', large: true}}/>
-          <Button icon={{name: 'location-arrow', type: 'font-awesome'}}/>
+          <View style={{ justifyContent: 'center' }}>
+            <Button
+              icon={{
+                name: 'map',
+                type: 'font-awesome',
+                style: { left: 5 }
+              }}
+              buttonStyle={styles.navButtonStyle}
+              onPress={() => console.log('Map')}
+            />
+            <Text
+              style={{
+                color: '#000000',
+                textAlign: 'center',
+                marginTop: 8,
+                marginBottom: 8
+              }}
+            >
+              Station
+            </Text>
+          </View>
+
+          <View style={{ justifyContent: 'center' }}>
+            <Button
+              icon={{
+                name: 'share',
+                type: 'font-awesome',
+                style: { left: 5 }
+              }}
+              buttonStyle={styles.navBigButtonStyle}
+              large
+              onPress={() => {
+                this.setState({ mapProvider: null });
+                this.props.navigation.navigate('searchContainer');
+              }}
+            />
+            <Text
+              style={{
+                color: '#000000',
+                textAlign: 'center',
+                marginTop: 9,
+                marginBottom: 8
+              }}
+            >
+              Go to
+            </Text>
+          </View>
+
+          <View style={{ justifyContent: 'center' }}>
+            <Button
+              icon={{
+                name: 'edit',
+                type: 'font-awesome',
+                style: { left: 5 }
+              }}
+              buttonStyle={styles.navButtonStyle}
+              onPress={() => console.log('Edit')}
+            />
+            <Text
+              style={{
+                color: '#000000',
+                textAlign: 'center',
+                marginTop: 8,
+                marginBottom: 8
+              }}
+            >
+              Manage
+            </Text>
+          </View>
         </View>
       </View>
     );
@@ -384,7 +446,7 @@ class MapScreen extends Component {
 const styles = StyleSheet.create({
   mapContainer: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-end'
   },
   navBarRightIconStyle: {
     margin: 20,
@@ -396,39 +458,22 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     justifyContent: 'center',
     backgroundColor: 'transparent'
   },
-  mapPlace: {
-    height: 63,
-    width: 63,
-    borderRadius: 31,
-    backgroundColor: '#F29C35',
-    alignItems: 'center',
-    justifyContent: 'center'
+  navButtonStyle: {
+    borderRadius: 32,
+    width: 64,
+    height: 64,
+    backgroundColor: '#F29C35'
   },
-  searchButton: {
-    height: 80,
-    width: 80,
+
+  navBigButtonStyle: {
     borderRadius: 40,
-    backgroundColor: '#F29C35',
-    borderWidth: 2,
-    borderStyle: 'solid',
-    borderColor: '#ffffff',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  navButton: {
-    height: 63,
-    width: 63,
-    borderRadius: 31,
-    backgroundColor: '#F29C35',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  icons: {
-    color: '#ffffff'
+    width: 80,
+    height: 80,
+    backgroundColor: '#F29C35'
   }
 });
 

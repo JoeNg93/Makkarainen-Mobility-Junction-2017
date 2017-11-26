@@ -6,11 +6,21 @@ import { TabNavigator, StackNavigator } from 'react-navigation';
 import MapScreen from './screens/MapScreen';
 import SearchScreen from './screens/SearchScreen';
 import SearchResultScreen from './screens/SearchResultScreen';
+import LiveMapScreen from './screens/LiveMapScreen';
 
-const MainNavigator = StackNavigator({
-  map: { screen: MapScreen },
-  search: { screen: SearchScreen }
-});
+const MainNavigator = TabNavigator(
+  {
+    mapContainer: { screen: StackNavigator({ map: { screen: MapScreen } }) },
+    searchContainer: {
+      screen: StackNavigator({
+        search: { screen: SearchScreen },
+        searchResult: { screen: SearchResultScreen },
+        liveMap: { screen: LiveMapScreen }
+      })
+    }
+  },
+  { animationEnabled: true, lazy: true }
+);
 
 export default class App extends React.Component {
   render() {
